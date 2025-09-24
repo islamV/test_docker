@@ -58,16 +58,17 @@ public class SecurityConfig {
                 .sessionManagement(c ->
                         c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(c -> c.configurationSource(corsConfigurationSource())) // ✅ فعلنا الـ CORS
+                .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(c -> {
-                            featureSecurityRules.forEach(r -> r.configure(c));
-                            c.anyRequest().authenticated();
-                        }
-                )
+                
+                    c.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll();
+
+                    featureSecurityRules.forEach(r -> r.configure(c));
+                    c.anyRequest().authenticated();
+                })
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(c -> {
-                    c.authenticationEntryPoint(
-                            new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+                    c.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
                     c.accessDeniedHandler(((request, response, accessDeniedException) ->
                             response.setStatus(HttpStatus.FORBIDDEN.value())));
                 });
@@ -75,7 +76,8 @@ public class SecurityConfig {
         return http.build();
     }
 
-    
+
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
