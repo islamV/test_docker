@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: quality_check
+
+  datasource:
+    url: ${DB_URL}
+    username: root
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  profiles:
+    active: dev
+
+  jwt:
+    secret: ${JWT_SECRET}
+    accessTokenExpiration: 900000
+    refreshTokenExpiration: 604800
+
+debug: true
