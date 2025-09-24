@@ -75,15 +75,15 @@ public class SecurityConfig {
         return http.build();
     }
 
+    
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        //configuration.addAllowedOrigin("http://qualtiy-nor-1izmvz-d9c057-92-242-187-173.traefik.me");
-        configuration.addAllowedOrigin("*");
-        //configuration.addAllowedOrigin("https://qualtiy-nor-1izmvz-d9c057-92-242-187-173.traefik.me");
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-        configuration.setAllowCredentials(true);
+        configuration.addAllowedOriginPattern("*"); // 👈 بدل addAllowedOrigin
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(false); // 👈 لازم false مع النجمة
+        configuration.addExposedHeader("Authorization");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
