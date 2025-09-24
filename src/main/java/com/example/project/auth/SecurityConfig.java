@@ -61,10 +61,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(c -> {
-                    // السماح للـ OPTIONS (preflight)
+
                     c.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
 
-                    // باقي القوانين
                     featureSecurityRules.forEach(r -> r.configure(c));
                     c.anyRequest().authenticated();
                 })
@@ -82,16 +81,18 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // 👇 حطي دومين الـ frontend بتاعك هنا
-        configuration.setAllowedOrigins(List.of("http://localhost:5173",
-                "https://qualtiy-nor-1izmvz-d9c057-92-242-187-173.traefik.me"));
+        configuration.addAllowedOriginPattern("*");
+
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true); // 👈 دلوقتي شغال لأننا محددين origin
+
+        configuration.setAllowCredentials(false);
+
         configuration.addExposedHeader("Authorization");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
 }
