@@ -4,6 +4,7 @@ import com.example.project.common.SecurityRules;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -60,9 +61,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(c -> {
-                
-                    c.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll();
+                    // السماح للـ OPTIONS (preflight)
+                    c.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
 
+                    // باقي القوانين
                     featureSecurityRules.forEach(r -> r.configure(c));
                     c.anyRequest().authenticated();
                 })
@@ -76,15 +78,16 @@ public class SecurityConfig {
         return http.build();
     }
 
-
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOriginPattern("*"); // 👈 بدل addAllowedOrigin
+
+        // 👇 حطي دومين الـ frontend بتاعك هنا
+        configuration.setAllowedOrigins(List.of("http://localhost:5173",
+                "https://qualtiy-nor-1izmvz-d9c057-92-242-187-173.traefik.me"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(false); // 👈 لازم false مع النجمة
+        configuration.setAllowCredentials(true); // 👈 دلوقتي شغال لأننا محددين origin
         configuration.addExposedHeader("Authorization");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
