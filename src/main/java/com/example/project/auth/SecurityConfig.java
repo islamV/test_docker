@@ -61,11 +61,8 @@ public class SecurityConfig {
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(c -> {
                     c.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
-
-                    c.requestMatchers("/auth/login", "/auth/register", "/auth/refresh").permitAll();
-
+                    c.requestMatchers("/auth/login", "/auth/refresh").permitAll();
                     featureSecurityRules.forEach(r -> r.configure(c));
-
                     c.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -81,8 +78,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.setAllowedOriginPatterns(List.of("https://quality.mzaodin.com"));
+        configuration.setAllowedOriginPatterns(List.of("*")); 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization"));

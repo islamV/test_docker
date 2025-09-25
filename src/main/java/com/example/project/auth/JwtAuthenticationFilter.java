@@ -24,15 +24,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        var authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            // مفيش توكن → كمل عادي (ممكن يكون endpoint مفتوح زي login/register)
+        String path = request.getServletPath();
+
+        if (path.equals("/auth/login") || path.equals("/auth/refresh")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        var token = authHeader.substring(7);
+        var authHeader = request.getHeader("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        var token = authHeader.substring(7); // إزالة "Bearer "
         var jwt = jwtService.parseToken(token);
 
         if (jwt == null || jwt.isExpired()) {
@@ -45,9 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 null,
                 List.of(new SimpleGrantedAuthority("ROLE_" + jwt.getRole()))
         );
-        authentication.setDetails(
-                new WebAuthenticationDetailsSource().buildDetails(request)
-        );
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
