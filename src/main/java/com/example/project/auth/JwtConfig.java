@@ -13,8 +13,8 @@ import javax.crypto.SecretKey;
 @Data
 public class JwtConfig {
     private String secret; // must be a Base64 encoded string
-    private int accessTokenExpiration;
-    private int refreshTokenExpiration;
+    private long accessTokenExpiration;
+    private long refreshTokenExpiration;
 
     public SecretKey getSecretKey() {
         System.out.println(secret);

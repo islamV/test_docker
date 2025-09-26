@@ -8,6 +8,7 @@ import io.jsonwebtoken.Jwts;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.Date;
 
 
@@ -24,7 +25,8 @@ public class JwtService {
         return generateToken(user, jwtConfig.getRefreshTokenExpiration());
     }
 
-    private Jwt generateToken(User user, long tokenExpiration) {
+    private Jwt generateToken(User user, long tokenExpirationSeconds) {
+        var expiration = Duration.ofSeconds(tokenExpirationSeconds).toMillis();
         var claims = Jwts.claims()
                 .subject(user.getEmail())
                 .add("email", user.getEmail())
@@ -32,7 +34,7 @@ public class JwtService {
                 .add("full_name", user.getFullName())
                 .add("role", user.getRole())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * tokenExpiration))
+                .expiration(new Date(System.currentTimeMillis() + expiration))
                 .build();
         return new Jwt(claims, jwtConfig.getSecretKey());
     }

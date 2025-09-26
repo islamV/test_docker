@@ -34,7 +34,7 @@ public class AuthController {
         var cookie = new Cookie("refreshToken", refreshToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/auth/refresh");
-        cookie.setMaxAge(jwtConfig.getRefreshTokenExpiration());
+        cookie.setMaxAge(Math.toIntExact(jwtConfig.getRefreshTokenExpiration()));
         cookie.setSecure(true);
         response.addCookie(cookie);
 
