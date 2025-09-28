@@ -26,7 +26,33 @@ public class DefaultAdminInitializer implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         var normalizedEmail = "admin@admin.com".toLowerCase(Locale.ROOT);
 
-        if (userRepository.existsByEmail(normalizedEmail)) {
+        var existing = userRepository.findByEmail(normalizedEmail);
+
+        if (existing.isPresent()) {
+            var admin = existing.get();
+            boolean changed = false;
+
+            if (!passwordEncoder.matches("123456789", admin.getPassword())) {
+                admin.setPassword(passwordEncoder.encode("123456789"));
+                changed = true;
+            }
+            if (admin.getRole() != Role.ADMIN) {
+                admin.setRole(Role.ADMIN);
+                changed = true;
+            }
+            if (admin.getFullName() == null || admin.getFullName().isBlank()) {
+                admin.setFullName("Admin");
+                changed = true;
+            }
+            if (!admin.isActive()) {
+                admin.setActive(true);
+                changed = true;
+            }
+
+            if (changed) {
+                userRepository.save(admin);
+                log.info("Default admin user normalized for {}", normalizedEmail);
+            }
             return;
         }
 
