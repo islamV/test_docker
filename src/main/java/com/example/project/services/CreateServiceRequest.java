@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter @Setter
 public class CreateServiceRequest {
@@ -27,5 +28,5 @@ public class CreateServiceRequest {
     @Size(max = 50)
     private String phone;
 
-    private String photoUrl;
+    private MultipartFile photo;
 }

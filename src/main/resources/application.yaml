@@ -17,7 +17,12 @@ spring:
 
   jwt:
     secret: ${JWT_SECRET}
-    accessTokenExpiration:  86400
+    accessTokenExpiration: 86400
     refreshTokenExpiration: 2592000
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 debug: true

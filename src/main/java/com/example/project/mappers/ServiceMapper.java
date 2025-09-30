@@ -12,12 +12,14 @@ import org.mapstruct.*;
 public interface ServiceMapper {
 
     @Mapping(source = "createdBy", target = "createdById")
+
     ServiceDto toDto(ServiceEntity entity);
 
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "photoUrl", ignore = true)
     ServiceEntity toEntity(CreateServiceRequest request);
 
-    //@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "photoUrl", ignore = true)
     void update(UpdateServiceRequest request, @MappingTarget ServiceEntity entity);
 }

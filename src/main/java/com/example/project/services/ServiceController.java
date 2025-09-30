@@ -5,6 +5,7 @@ import com.example.project.dtos.ServiceDto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,14 +30,14 @@ public class ServiceController {
     }
 
     // POST /services
-    @PostMapping
-    public ServiceDto create(@Valid @RequestBody CreateServiceRequest request) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ServiceDto create(@ModelAttribute CreateServiceRequest request) {
         return serviceService.create(request);
     }
 
     // PATCH /services/{id}
-    @PatchMapping("/{id}")
-    public ServiceDto update(@PathVariable Long id, @RequestBody UpdateServiceRequest request) {
+    @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ServiceDto update(@PathVariable Long id, @ModelAttribute UpdateServiceRequest request) {
         return serviceService.update(id, request);
     }
 

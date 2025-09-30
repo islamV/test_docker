@@ -27,7 +27,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        if (path.equals("/auth/login") || path.equals("/auth/refresh")) {
+        // السماح بالمسارات المفتوحة
+        if (path.equals("/auth/login") || path.equals("/auth/refresh") || path.startsWith("/files/")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -57,5 +58,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
-    }
-}
+    }}

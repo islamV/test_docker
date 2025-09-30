@@ -62,6 +62,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(c -> {
                     c.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
                     c.requestMatchers("/auth/login", "/auth/refresh").permitAll();
+                    c.requestMatchers("/files/**").permitAll();
                     featureSecurityRules.forEach(r -> r.configure(c));
                     c.anyRequest().authenticated();
                 })
@@ -78,7 +79,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*")); 
+        configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization"));
