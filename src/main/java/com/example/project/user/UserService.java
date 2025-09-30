@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Locale;
 
 
 
@@ -38,11 +39,14 @@ public class UserService {
 
     // POST /users
     public UserDto create(CreateUserRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new DuplicateUserException(request.getEmail());
+        var normalizedEmail = normalizeEmail(request.getEmail());
+
+        if (userRepository.existsByEmail(normalizedEmail)) {
+            throw new DuplicateUserException(normalizedEmail);
         }
 
         var entity = mapper.toEntity(request);
+        entity.setEmail(normalizedEmail);
 
         entity.setPassword(passwordEncoder.encode(request.getPassword()));
         entity = userRepository.save(entity);
@@ -78,6 +82,17 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
+    }
+
+    private String normalizeEmail(String email) {
+        if (email == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is required");
+        }
+        var normalized = email.trim().toLowerCase(Locale.ROOT);
+        if (normalized.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is required");
+        }
+        return normalized;
     }
 
 }

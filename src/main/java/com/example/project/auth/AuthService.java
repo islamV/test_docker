@@ -10,7 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.Locale;
 
 @AllArgsConstructor
 @Service
@@ -21,27 +21,38 @@ public class AuthService {
 
     public User getCurrentUser() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-      var userId = (Long) authentication.getPrincipal();
+        var userId = (Long) authentication.getPrincipal();
 
-       return userRepository.findById(userId).orElse(null);
-   }
-
-
+        return userRepository.findById(userId).orElse(null);
+    }
 
     public LoginResponse login(LoginRequest request) {
+        var email = normalizeEmail(request.getEmail());
+
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
-                request.getEmail(),
+                email,
                 request.getPassword()
             )
         );
-//        System.out.println("user"+request.getEmail());
 
-        var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
         var accessToken = jwtService.generateAccessToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
 
         return new LoginResponse(accessToken, refreshToken);
+    }
+
+    private String normalizeEmail(String email) {
+        if (email == null) {
+            throw new BadCredentialsException("Invalid email or password");
+        }
+        var normalized = email.trim().toLowerCase(Locale.ROOT);
+        if (normalized.isEmpty()) {
+            throw new BadCredentialsException("Invalid email or password");
+        }
+        return normalized;
     }
 
     public Jwt refreshAccessToken(String refreshToken) {

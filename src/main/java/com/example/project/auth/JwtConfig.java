@@ -13,11 +13,10 @@ import javax.crypto.SecretKey;
 @Data
 public class JwtConfig {
     private String secret; // must be a Base64 encoded string
-    private int accessTokenExpiration;
-    private int refreshTokenExpiration;
+    private long accessTokenExpiration;
+    private long refreshTokenExpiration;
 
     public SecretKey getSecretKey() {
-        System.out.println(secret);
         byte[] keyBytes = Decoders.BASE64.decode(secret); // decode Base64
         return Keys.hmacShaKeyFor(keyBytes); // safe for HS256
     }
