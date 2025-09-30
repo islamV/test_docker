@@ -31,8 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        // السماح بالمسارات المفتوحة
-        if (path.equals("/auth/login") || path.equals("/auth/refresh") || path.startsWith("/files/")) {
+        if (path.equals("/auth/login") || path.equals("/auth/refresh")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -62,9 +61,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
-<<<<<<< HEAD
-    }}
-=======
     }
 
     private void writeUnauthorized(HttpServletResponse response, String message) throws IOException {
@@ -79,4 +75,3 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.getWriter().write(body);
     }
 }
->>>>>>> 916ade8ff770013278c8825c801f22bd89a99216

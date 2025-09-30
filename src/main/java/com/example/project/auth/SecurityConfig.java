@@ -71,10 +71,12 @@ public class SecurityConfig {
                     c.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
                     c.accessDeniedHandler((request, response, accessDeniedException) -> response
                             .setStatus(HttpStatus.FORBIDDEN.value()));
-                });
+                })
+                .authenticationProvider(authenticationProvider());
 
         return http.build();
     }
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
