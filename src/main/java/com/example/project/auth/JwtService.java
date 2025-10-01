@@ -39,14 +39,18 @@ public class JwtService {
         return new Jwt(claims, jwtConfig.getSecretKey());
     }
 
+
     public Jwt parseToken(String token) {
         try {
             var claims = getClaims(token);
             return new Jwt(claims, jwtConfig.getSecretKey());
         } catch (JwtException e) {
+            System.out.println(" JWT parse failed: " + e.getClass().getSimpleName() + " → " + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }
+
 
     private Claims getClaims(String token) {
         return Jwts.parser()

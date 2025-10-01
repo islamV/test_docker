@@ -35,11 +35,12 @@ public class AuthController {
         var refreshToken = loginResult.getRefreshToken().toString();
         var cookie = new Cookie("refreshToken", refreshToken);
         cookie.setHttpOnly(true);
-        cookie.setPath("/auth/refresh");
+        cookie.setPath("/"); // مهم عشان الكوكي يبقى متاح في كل الريكويست
         cookie.setMaxAge(Math.toIntExact(jwtConfig.getRefreshTokenExpiration()));
-        cookie.setSecure(true);
+        cookie.setSecure(true); // في production لازم true عشان https
         response.addCookie(cookie);
 
+        System.out.println("🍪 Refresh token cookie set. Secure=" + cookie.getSecure() + ", Path=" + cookie.getPath());
         return new JwtResponse(loginResult.getAccessToken().toString());
     }
 

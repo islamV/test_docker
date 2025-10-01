@@ -3,7 +3,6 @@ package com.example.project.auth;
 import com.example.project.repositories.UserRepository;
 import com.example.project.entities.User;
 import lombok.AllArgsConstructor;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,15 +28,24 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
         var email = normalizeEmail(request.getEmail());
 
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                email,
-                request.getPassword()
-            )
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            email,
+                            request.getPassword()
+                    )
+            );
+            System.out.println("✅ Login success for: " + email);
+        } catch (BadCredentialsException e) {
+            System.out.println("❌ Login failed for: " + request.getEmail());
+            throw e;
+        }
 
         var user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
+
+        System.out.println("👉 User loaded from DB: id=" + user.getId() + ", role=" + user.getRole());
+
         var accessToken = jwtService.generateAccessToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
 

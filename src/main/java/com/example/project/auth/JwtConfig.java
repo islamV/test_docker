@@ -2,6 +2,7 @@ package com.example.project.auth;
 
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -20,4 +21,10 @@ public class JwtConfig {
         byte[] keyBytes = Decoders.BASE64.decode(secret); // decode Base64
         return Keys.hmacShaKeyFor(keyBytes); // safe for HS256
     }
-}
+
+    @PostConstruct
+    public void logKey() {
+        var key = getSecretKey();
+        System.out.println(" JWT_SECRET length (bytes) = " + key.getEncoded().length);
+        System.out.println(" JWT_SECRET (Base64) = " + secret);
+}}
